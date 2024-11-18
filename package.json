@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "rahad-all-downloader": "^2.1.17",
+    "rahad-media-downloader": "^2.1.14",
+    "telegraf": "^4.16.3"
+  }
+}
