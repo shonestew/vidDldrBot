@@ -116,6 +116,30 @@ async function sendUrlPhoto(ctx, urlPhoto) {
     };
 };
 
+async function sendUrlMusic(ctx, urlMusic) {
+    try {
+        const parsedUrl = url.parse(urlMusic, true);
+        let domain = parsedUrl.host;
+
+        if (domain == 'vm.tiktok.com') {
+            urlPhoto = 'https://vt.tiktok.com' + parsedUrl.path;
+            domain = 'vt.tiktok.com';
+        };
+    
+        if (ttDomains.includes(domain)) {
+            const res = await rh.rahadtikdl(urlMusic);
+    
+            ctx.replyWithAudio(res.data.musicInfo.music, {
+                reply_to_message_id: ctx.message.message_id,
+            });
+        } else {
+            ctx.telegram.sendMessage(ctx.message.chat.id, ' ❌ Это не ссылка на картинку/картинки|видео с музыкой на платформе"Tiktok"!');
+        };
+    } catch (e) {
+        console.log(e);
+    };
+};
+
 async function handlePhotoDownload(ctx) {
     try {
         const chatId = ctx.message.chat.id;
@@ -143,4 +167,31 @@ async function handlePhotoDownload(ctx) {
     };
 };
 
-module.exports = { handleVideoDownload, handlePhotoDownload, sendUrlVideo, sendUrlPhoto };
+async function handleAudioDownload(ctx) {
+    try {
+        const chatId = ctx.message.chat.id;
+        const reply = ctx.message.reply_to_message;
+        const msg = ctx.message.text.slice(1);
+        const args = msg.split(' ');
+        const urlMusic = args[1];
+
+        if (reply) {
+            const repliedText = reply.text;
+            if (!repliedText.startsWith('https://') && !repliedText.startsWith('http://')) {
+                ctx.telegram.sendMessage(chatId, ' ❌ Сообщение кроме ссылки содержит лишний текст!', {
+                    disable_web_page_preview: true,
+                });
+            } else {
+                sendUrlMusic(ctx, repliedText);
+            };
+        } else if (args.length === 2) {
+            sendUrlMusic(ctx, urlMusic);
+        } else {
+            ctx.telegram.sendMessage(chatId, ' ❌ Вы забыли указать в аргументе ссылку или ответить командой на ссылку!');
+        };
+    } catch (e) {
+        console.log(e);
+    };
+};
+
+module.exports = { handleVideoDownload, handlePhotoDownload, handleAudioDownload };
