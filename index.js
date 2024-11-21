@@ -1,5 +1,5 @@
 const { Telegraf } = require('telegraf');
-const { handleVideoDownload, handlePhotoDownload } = require('./utils.js');
+const { handleVideoDownload, handlePhotoDownload, handleAudioDownload } = require('./utils.js');
 require('dotenv').config();
 
 const bot = new Telegraf(process.env.TOKENN);
@@ -36,6 +36,14 @@ bot.command('download', async (ctx) => {
 bot.command('ttPhotos', async (ctx) => {
     try {
         await handlePhotoDownload(ctx);
+    } catch (e) {
+        console.error('капитан, тут ошибочка:', e.message);
+    };
+});
+
+bot.command('ttMusic', async (ctx) => {
+    try {
+        await handleAudioDownload(ctx);
     } catch (e) {
         console.error('капитан, тут ошибочка:', e.message);
     };
