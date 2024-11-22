@@ -19,6 +19,7 @@ async function handleVideoDownload(ctx) {
             if (!repliedText.startsWith('https://') && !repliedText.startsWith('http://')) {
                 ctx.telegram.sendMessage(chatId, ' ❌ Сообщение кроме ссылки содержит лишний текст!', {
                     disable_web_page_preview: true,
+                    reply_to_message_id: ctx.message.message_id,
                 });
             } else {
                 sendUrlVideo(ctx, repliedText);
@@ -26,7 +27,9 @@ async function handleVideoDownload(ctx) {
         } else if (args.length === 2) {
             sendUrlVideo(ctx, urlVideo);
         } else {
-            ctx.telegram.sendMessage(chatId, ' ❌ Вы забыли указать в аргументе ссылку или ответить командой на ссылку!');
+            ctx.telegram.sendMessage(chatId, ' ❌ Вы забыли указать в аргументе ссылку или ответить командой на ссылку!', {
+                reply_to_message_id: ctx.message.message_id,
+            });
         };
     } catch (e) {
         console.log(e);
@@ -73,7 +76,9 @@ async function sendUrlVideo(ctx, urlVideo) {
                 });
             };
         } else {
-            ctx.telegram.sendMessage(ctx.message.chat.id, ' ❌ Это не ссылка на видео на платформе "Youtube" или "Tiktok"!');
+            ctx.telegram.sendMessage(ctx.message.chat.id, ' ❌ Это не ссылка на видео на платформе "Youtube" или "Tiktok"!', {
+                reply_to_message_id: ctx.message.message_id,
+            });
         };
     } catch (e) {
         console.error(e);
@@ -99,7 +104,15 @@ async function sendUrlPhoto(ctx, urlPhoto) {
 
         if (ttDomains.includes(domain)) {
            const res = await rh.rahadtikdl(urlPhoto);
-           const photos = res.data.images;
+           const photos = res?.data?.images;
+
+           if (!photos) {
+              ctx.telegram.sendMessage(ctx.message.chat.id, ' ❌ Это не ссылка на картинку/картинки на платформе "Tiktok"!', {
+                reply_to_message_id: ctx.message.message_id,
+              });
+              return;
+           };
+
            const media = photos.map(path => ({
                type: 'photo',
                 media: path
@@ -109,7 +122,9 @@ async function sendUrlPhoto(ctx, urlPhoto) {
                 reply_to_message_id: ctx.message.message_id,
             });
         } else {
-            ctx.telegram.sendMessage(ctx.message.chat.id, ' ❌ Это не ссылка на картинку/картинки на платформе"Tiktok"!');
+            ctx.telegram.sendMessage(ctx.message.chat.id, ' ❌ Это не ссылка на картинку/картинки на платформе "Tiktok"!', {
+                reply_to_message_id: ctx.message.message_id,
+            });
         };
     } catch (e) {
         console.log(e);
@@ -133,7 +148,9 @@ async function sendUrlMusic(ctx, urlMusic) {
                 reply_to_message_id: ctx.message.message_id,
             });
         } else {
-            ctx.telegram.sendMessage(ctx.message.chat.id, ' ❌ Это не ссылка на картинку/картинки|видео с музыкой на платформе"Tiktok"!');
+            ctx.replyWithHTML(ctx.message.chat.id, ' ❌ Это не ссылка на картинку/картинки|видео с музыкой на платформе "Tiktok"!', {
+                reply_to_message_id: ctx.message.message_id,
+            });
         };
     } catch (e) {
         console.log(e);
@@ -151,8 +168,9 @@ async function handlePhotoDownload(ctx) {
         if (reply) {
             const repliedText = reply.text;
             if (!repliedText.startsWith('https://') && !repliedText.startsWith('http://')) {
-                ctx.telegram.sendMessage(chatId, ' ❌ Сообщение кроме ссылки содержит лишний текст!', {
+                ctx.reply(' ❌ Сообщение кроме ссылки содержит лишний текст!', {
                     disable_web_page_preview: true,
+                    reply_to_message_id: ctx.message.message_id,
                 });
             } else {
                 sendUrlPhoto(ctx, repliedText);
@@ -160,7 +178,9 @@ async function handlePhotoDownload(ctx) {
         } else if (args.length === 2) {
             sendUrlPhoto(ctx, urlPhoto);
         } else {
-            ctx.telegram.sendMessage(chatId, ' ❌ Вы забыли указать в аргументе ссылку или ответить командой на ссылку!');
+            ctx.telegram.sendMessage(chatId, ' ❌ Вы забыли указать в аргументе ссылку или ответить командой на ссылку!', {
+                reply_to_message_id: ctx.message.message_id,
+            });
         };
     } catch (e) {
         console.log(e);
@@ -187,7 +207,9 @@ async function handleAudioDownload(ctx) {
         } else if (args.length === 2) {
             sendUrlMusic(ctx, urlMusic);
         } else {
-            ctx.telegram.sendMessage(chatId, ' ❌ Вы забыли указать в аргументе ссылку или ответить командой на ссылку!');
+            ctx.telegram.sendMessage(chatId, ' ❌ Вы забыли указать в аргументе ссылку или ответить командой на ссылку!', {
+                reply_to_message_id: ctx.message.message_id,
+            });
         };
     } catch (e) {
         console.log(e);
